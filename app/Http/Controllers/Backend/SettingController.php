@@ -56,7 +56,7 @@ if ($request->hasFile('logo')) {
     // $logoFile=Image::make($logoFile)->resize(300, 300);
     $logoName = uniqid() . '.' . $logoFile->getClientOriginalExtension();
 
-     
+
     // Resize and save using Intervention Image
     //   Image::make($logoFile)
     //     ->resize(300, 300)
@@ -154,7 +154,7 @@ if ($request->hasFile('favicon')) {
     }
 
      public function mail_store(Request $request){
-       
+
         $request->validate([
             'mail_mailer' => 'required|string',
             'mail_host' => 'required|string',
@@ -190,7 +190,60 @@ if ($request->hasFile('favicon')) {
 
         return redirect()->back()->with('success', 'Mail settings updated successfully.');
     }
+
+
+
+    public function adIndex()
+    {
+        return view('backend.layouts.setting.activeDirectory');
+    }
+
+    public function adUpdate(Request $request)
+    {
+        $request->validate([
+            'LDAP_CONNECTION' => 'required|string',
+            'LDAP_HOST'       => 'required|string',
+            'LDAP_USERNAME'   => 'nullable|string',
+            'LDAP_PASSWORD'   => 'nullable|string',
+            'LDAP_BASE_DN'    => 'nullable|string',
+            'LDAP_PORT'       => 'nullable|string',
+            'LDAP_SSL'        => 'nullable|string',
+            'LDAP_TLS'        => 'nullable|string',
+            'LDAP_SASL'       => 'nullable|string',
+            'LDAP_TIMEOUT'    => 'nullable|string',
+            'LDAP_LOGGING'    => 'nullable|string',
+        ]);
+
+        $envPath = base_path('.env');
+        $envContent = File::get($envPath);
+
+        $replacements = [
+            '/LDAP_CONNECTION=(.*)\s/' => 'LDAP_CONNECTION=' . $request->LDAP_CONNECTION,
+            '/LDAP_HOST=(.*)\s/'       => 'LDAP_HOST=' . $request->LDAP_HOST,
+            '/LDAP_USERNAME=(.*)\s/'   => 'LDAP_USERNAME=' . $request->LDAP_USERNAME,
+            '/LDAP_PASSWORD=(.*)\s/'   => 'LDAP_PASSWORD=' . $request->LDAP_PASSWORD,
+            '/LDAP_BASE_DN=(.*)\s/'    => 'LDAP_BASE_DN=' . $request->LDAP_BASE_DN,
+            '/LDAP_PORT=(.*)\s/'       => 'LDAP_PORT=' . $request->LDAP_PORT,
+            '/LDAP_SSL=(.*)\s/'        => 'LDAP_SSL=' . $request->LDAP_SSL,
+            '/LDAP_TLS=(.*)\s/'        => 'LDAP_TLS=' . $request->LDAP_TLS,
+            '/LDAP_SASL=(.*)\s/'       => 'LDAP_SASL=' . $request->LDAP_SASL,
+            '/LDAP_TIMEOUT=(.*)\s/'    => 'LDAP_TIMEOUT=' . $request->LDAP_TIMEOUT,
+            '/LDAP_LOGGING=(.*)\s/'    => 'LDAP_LOGGING=' . $request->LDAP_LOGGING,
+        ];
+
+        foreach ($replacements as $pattern => $replacement) {
+            if (preg_match($pattern, $envContent)) {
+                $envContent = preg_replace($pattern, $replacement . "\n", $envContent);
+            } else {
+                $envContent .= "\n" . str_replace('=', '=', $replacement);
+            }
+        }
+
+        File::put($envPath, $envContent);
+
+        return redirect()->back()->with('success', 'Active Directory settings updated successfully.');
+    }
 }
 
-     
+
 

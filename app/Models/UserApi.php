@@ -11,7 +11,7 @@ class UserApi extends Authenticatable implements JWTSubject
 {
     use HasFactory, Notifiable;
 
-    protected $table = 'users'; // <--- Add this
+    protected $table = 'users'; 
 
     protected $fillable = [
         'avatar',

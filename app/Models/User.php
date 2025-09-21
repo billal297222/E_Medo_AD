@@ -20,3 +20,6 @@ class User extends Authenticatable implements LdapAuthenticatable
         'remember_token',
     ];
 }
+
+
+// for ad login

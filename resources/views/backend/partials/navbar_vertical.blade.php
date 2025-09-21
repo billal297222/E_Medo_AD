@@ -20,7 +20,7 @@
                 </div>
 
                 <!-- CMS Heading -->
-                 {{-- <li class="nav-item">
+                {{-- <li class="nav-item">
                     <div class="navbar-heading">CMS</div>
                 </li> --}}
 
@@ -32,7 +32,7 @@
                     </a>
                 </div>
 
-                  {{-- <!-- Category -->
+                {{-- <!-- Category -->
                 <div class="nav">
                     <a href="{{ route('category.index') }}"
                         class="nav-link {{ request()->routeIs('category.index') ? 'active text-white fw-bold bg-primary' : 'text-dark' }}">
@@ -107,7 +107,7 @@
                 <div class="nav">
                     <a class="nav-link d-flex justify-content-between align-items-center  {{ request()->routeIs('profile.edit', 'system.setting', 'admin.setting', 'mail.setting') ? '' : 'collapsed' }}"
                         data-bs-toggle="collapse" data-bs-target="#navecommerce"
-                        aria-expanded="{{ request()->routeIs('profile.edit', 'system.setting', 'admin.setting', 'mail.setting') ? 'true' : 'false' }}"
+                        aria-expanded="{{ request()->routeIs('profile.edit', 'system.setting', 'directory.setting', 'admin.setting', 'mail.setting') ? 'true' : 'false' }}"
                         aria-controls="navecommerce">
 
                         <div class="text-dark">
@@ -121,23 +121,32 @@
                     </a>
 
                     <div id="navecommerce"
-                        class="collapse {{ request()->routeIs('profile.edit', 'system.setting', 'admin.setting', 'mail.setting') ? 'show' : '' }}">
+                        class="collapse {{ request()->routeIs('profile.edit', 'system.setting', 'admin.setting', 'mail.setting', 'directory.setting') ? 'show' : '' }}">
                         <div class="nav flex-column ms-3">
                             <a href="{{ route('profile.edit') }}"
                                 class="nav-link {{ request()->routeIs('profile.edit') ? 'active text-white fw-bold bg-primary' : 'text-dark' }}">
                                 <i data-feather="user" class="me-2 icon-xxs"></i>
                                 Profile Setting
                             </a>
+
                             <a href="{{ route('system.setting') }}"
                                 class="nav-link {{ request()->routeIs('system.setting') ? 'active text-white fw-bold bg-primary' : 'text-dark' }}">
                                 <i data-feather="tool" class="me-2 icon-xxs"></i>
                                 System Setting
                             </a>
+
+                            <a href="{{ route('directory.setting') }}"
+                                class="nav-link {{ request()->routeIs('directory.setting') ? 'active text-white fw-bold bg-primary' : 'text-dark' }}">
+                                <i data-feather="tool" class="me-2 icon-xxs"></i>
+                                Active Directory Setting
+                            </a>
+
                             <a href="{{ route('admin.setting') }}"
                                 class="nav-link {{ request()->routeIs('admin.setting') ? 'active text-white fw-bold bg-primary' : 'text-dark' }}">
                                 <i data-feather="shield" class="me-2 icon-xxs"></i>
                                 Admin Setting
                             </a>
+
                             <a href="{{ route('mail.setting') }}"
                                 class="nav-link {{ request()->routeIs('mail.setting') ? 'active text-white fw-bold bg-primary' : 'text-dark' }}">
                                 <i data-feather="mail" class="me-2 icon-xxs"></i>
@@ -145,6 +154,7 @@
                             </a>
                         </div>
                     </div>
+
                 </div>
 
 

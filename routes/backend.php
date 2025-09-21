@@ -90,6 +90,9 @@ Route::prefix('system')->controller(SettingController::class)->group(function ()
     Route::post('/update/admin', 'admin_update')->name('admin.update');
     Route::get('/setting/mail', 'mail')->name('mail.setting');
     Route::post('/setting/mail', 'mail_store')->name('mail.update');
+
+    Route::get('active/directory', 'adIndex')->name('directory.setting');
+    Route::post('active/directory', 'adUpdate')->name('directory.update');
 });
 
 // User Route
