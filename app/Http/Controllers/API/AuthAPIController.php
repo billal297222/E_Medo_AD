@@ -1,43 +1,73 @@
 <?php
 
-namespace App\Http\Controllers\Auth;
+namespace App\Http\Controllers\API;
 
-use App\Http\Controllers\Controller;
+use App\Models\User;
+use App\Models\UserApi;
+use LdapRecord\Container;
+use App\Models\LdapJwtUser;
+use App\Traits\ApiResponse;
 use Illuminate\Http\Request;
 use Tymon\JWTAuth\Facades\JWTAuth;
-use LdapRecord\Container;
+// use LdapRecord\Models\ActiveDirectory\User;
+use App\Http\Controllers\Controller;
+use LdapRecord\Laravel\Auth as LdapAuth;
+use LdapRecord\Models\OpenLDAP\User as LdapUser;
 
 class AuthAPIController extends Controller
 {
-    public function login(Request $request)
-    {
-        $request->validate([
-            'email'    => 'required|email',
-            'password' => 'required|string',
-        ]);
+    use ApiResponse;
 
-        $email    = $request->email;
-        $password = $request->password;
+  public function login(Request $request)
+{
+    $request->validate([
+        'uid' => 'required|string',
+        'password' => 'required|string',
+    ]);
 
-        try {
-            $ldap = Container::getConnection('default');
-
-            if (! $ldap->auth()->attempt($email, $password, true)) {
-                return response()->json(['error' => 'Invalid email or password'], 401);
-            }
-        } catch (\Exception $e) {
-            return response()->json(['error' => 'LDAP connection failed: ' . $e->getMessage()], 500);
-        }
-
-        // Generate JWT token only
-        $token = JWTAuth::fromUser((object) ['id' => 0, 'email' => $email]);
-
-        return response()->json([
-            'message' => 'Login successful',
-            'email'   => $email,
-            'token'   => $token,
-        ], 200);
+    // Find LDAP user by uid
+    $ldapUser = LdapUser::where('uid', $request->uid)->first();
+    if (!$ldapUser) {
+        return $this->error('', 'Invalid user', 401);
     }
+
+    // Get DN of the user
+    $dn = $ldapUser->getDn();
+
+    // Try to bind with DN and password
+    try {
+        $connection = Container::getConnection(); // default LDAP connection
+        $connection->auth()->attempt($dn, $request->password, $bindAsUser = true);
+    } catch (\LdapRecord\Auth\BindException $e) {
+        return $this->error('', 'Invalid credentials', 401);
+    }
+
+    // Create or get local Eloquent user for JWT
+    $localUser = UserApi::firstOrCreate(
+        ['uid' => $ldapUser->getFirstAttribute('uid')],
+        [
+            'name' => $ldapUser->getFirstAttribute('cn'),
+            'email' => $ldapUser->getFirstAttribute('mail') ?? $ldapUser->getFirstAttribute('uid') . '@example.com',
+            'password' => bcrypt('dummy'), // Not actually used
+        ]
+    );
+
+    // Generate JWT token from local Eloquent user
+    $token = JWTAuth::fromUser($localUser);
+
+    $data = [
+        'token' => $token,
+        'token_type' => 'bearer',
+        'user' => [
+            'name' => $localUser->name,
+            'uid' => $localUser->uid,
+            'email' => $localUser->email,
+        ]
+    ];
+
+    return $this->success($data, 'Login successful', 200);
+}
+
 
     public function me(Request $request)
     {
@@ -61,4 +91,3 @@ class AuthAPIController extends Controller
         return response()->json(['message' => 'Logged out successfully']);
     }
 }
-

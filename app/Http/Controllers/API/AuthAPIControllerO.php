@@ -9,7 +9,7 @@ use Tymon\JWTAuth\Facades\JWTAuth;
 use App\Models\UserApi;
 use Illuminate\Support\Facades\Hash;
 
-class AuthAPIController extends Controller
+class AuthAPIControllerO extends Controller
 {
     use ApiResponse;
 

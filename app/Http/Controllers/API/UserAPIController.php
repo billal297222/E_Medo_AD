@@ -31,7 +31,7 @@ use ApiResponse;
         return $this->error('','No PDF found .',200);
       }
 
-      return $this->success($pdfs,'pdf found in this days',201);
+      return $this->success($pdfs,'Total pdf found',201);
     }
 
 
@@ -89,28 +89,32 @@ public function getDaysByMonth(Request $request)
 // }
 
 
-public function summary(Request $request, $page = 1)
+public function summary(Request $request, $page = 1 , $perPage = 10)
 {
-    // $perPage = 10;
-    $perPage = (int) $request->query('per_page', 10);
+    $page = (int) $page;
+    $perPage = (int) $perPage;
 
     $pdfs = Pdf::with('date:id,date_value')->orderBy('updated_at', 'desc')
            ->paginate($perPage, ['title', 'short_desc', 'date_id'], 'page', $page);
 
+    $total_pdf = $pdfs->total();
+    $total_page=ceil($total_pdf / $perPage);
+
     $customResponse = [
         'current_page' => $pdfs->currentPage(),
+        'total_page' => $total_page,
         'data' => $pdfs->map(function($pdf) {
             return [
                 'title' => $pdf->title,
                 'short_desc' => $pdf->short_desc,
                 'date_value' => $pdf->date->date_value ?? null,
+               //'total_pdf' => $pdfs->total(),
             ];
         })->toArray(),
     ];
 
     return $this->success($customResponse, 'PDF summary', 200);
 }
-
 
 // public function downloadTodaySummary()
 // {
@@ -153,16 +157,11 @@ public function summary(Request $request, $page = 1)
 
 //     try {
 //         $pdf = PDFGenerator::loadView('backend.layouts.pdf.downloadSummary', [
-//             'pdfs' => $pdfs->map(function($pdf) {
-//                 return [
-//                     'title' => $pdf->title,
-//                     'short_desc' => $pdf->short_desc,
-//                     'date_value' => $pdf->date->date_value ?? null,
-//                 ];
-//             })->toArray(),
-//             'currentPage' => $pdfs->currentPage(),
-//             'pageNumber' => $page,
-//         ]);
+//     'pdfs' => $pdfs,
+//     'currentPage' => $pdfs->currentPage(),
+//     'pageNumber' => $page,
+// ]);
+
 
 //         return $pdf->download("summary_page_{$page}.pdf");
 //     } catch (\Exception $e) {
@@ -170,13 +169,10 @@ public function summary(Request $request, $page = 1)
 //     }
 // }
 
-
-public function downloadSummary(Request $request)
+public function downloadSummary(Request $request, $page = 1, $perPage = 10)
 {
-    $page = (int) $request->query('page', 1);
-    // $perPage = 10;
-    $perPage = (int) $request->query('per_page', 10);
-
+    $page = (int) $page;
+    $perPage = (int) $perPage;
 
     $pdfs = Pdf::with('date:id,date_value')
         ->orderBy('updated_at', 'desc')
@@ -187,16 +183,13 @@ public function downloadSummary(Request $request)
     }
 
     try {
+
         $pdf = PDFGenerator::loadView('backend.layouts.pdf.downloadSummary', [
-            'pdfs' => $pdfs->map(function($pdf) {
-                return [
-                    'title' => $pdf->title,
-                    'short_desc' => $pdf->short_desc,
-                    'date_value' => $pdf->date->date_value ?? null,
-                ];
-            })->toArray(),
-            'currentPage' => $pdfs->currentPage(),
+            'pdfs'       => $pdfs,
+            'currentPage'=> $pdfs->currentPage(),
             'pageNumber' => $page,
+            'perPage'    => $perPage,
+            'dateRecord' => $pdfs->first()->date ?? null,
         ]);
 
         return $pdf->download("summary_page_{$page}.pdf");
@@ -204,6 +197,7 @@ public function downloadSummary(Request $request)
         return $this->error($e->getMessage(), 'PDF generation failed', 505);
     }
 }
+
 
 
 

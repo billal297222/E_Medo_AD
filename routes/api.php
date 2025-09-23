@@ -8,7 +8,7 @@ use App\Http\Controllers\API\AdminAPIPdfController;
 
 
 
-Route::post('/user/login', [AuthAPIController::class, 'userLogin']);
+Route::post('/user/login', [AuthAPIController::class, 'login']);
 
 Route::middleware('auth:api')->group(function () {
 
@@ -17,9 +17,9 @@ Route::middleware('auth:api')->group(function () {
     // User routes
     Route::get('/all/pdfs', [UserAPIController::class, 'index']);
 
-    Route::get('/pdfs/today/summary/{page?}', [UserAPIController::class, 'summary']); // summary
+    Route::get('/pdfs/today/summary/{page?}/{per_page?}', [UserAPIController::class, 'summary']); // summary
 
-    Route::get('/pdfs/summary/download', [UserAPIController::class, 'downloadSummary']); // summary download
+    Route::get('/pdfs/summary/download/{page?}/{per_page?}', [UserAPIController::class, 'downloadSummary']); // summary download
 
     Route::get('/single/pdfs/show/{id}', [UserAPIController::class, 'show']); // single pdf shows
 
@@ -33,6 +33,10 @@ Route::middleware('auth:api')->group(function () {
 
     Route::get('/user/info', [UserAPIController::class, 'userInfo']);
 });
+
+
+
+
 
 
 // Route::post('/login', [AuthAPIController::class, 'login']);

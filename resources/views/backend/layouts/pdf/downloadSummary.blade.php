@@ -18,7 +18,7 @@
         Downloaded on: {{ now()->format('Y-m-d H:i:s') }}
     </div>
 
-    <h2>PDF Summary - Page {{ $pageNumber }}</h2>
+    <h2>PDF Summary </h2>
 
     <table>
         <thead>
@@ -35,7 +35,8 @@
                     <td>{{ ($index + 1) + (($pageNumber - 1) * 10) }}</td>
                     <td>{{ $pdf['title'] }}</td>
                     <td>{{ $pdf['short_desc'] }}</td>
-                    <td>{{ $pdf['date_value'] }}</td>
+                    <td>{{ $pdf->date->date_value ?? '' }}</td>
+
                 </tr>
             @endforeach
         </tbody>

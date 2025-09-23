@@ -11,9 +11,9 @@
 
                 <!-- Dashboard -->
                 <!-- Dashboard -->
-                <div class="nav">
+                <div class="nav flex-column">
                     <a href="{{ route('dashboard') }}"
-                        class="nav-link {{ request()->routeIs('dashboard') ? 'active text-white fw-bold bg-primary' : 'text-dark' }}">
+                        class="nav-link {{ request()->routeIs('dashboard') ? 'active text-white fw-bold bg-primary rounded-pill px-3 py-2' : 'text-dark' }}">
                         <i data-feather="home" class="me-2 icon-xxs"></i>
                         Dashboard
                     </a>
@@ -24,9 +24,10 @@
                     <div class="navbar-heading">CMS</div>
                 </li> --}}
 
-                <div class="nav">
+                <!-- Single PDF Link -->
+                <div class="nav flex-column">
                     <a href="{{ route('pdf.index') }}"
-                        class="nav-link {{ request()->routeIs('pdf.index') ? 'active text-white fw-bold bg-primary' : 'text-dark' }}">
+                        class="nav-link {{ request()->routeIs('pdf.index') ? 'active text-white fw-bold bg-primary rounded-pill px-3 py-2' : 'text-dark' }}">
                         <i data-feather="folder" class="me-2 icon-xxs"></i>
                         PDF
                     </a>
@@ -63,7 +64,7 @@
 
 
                 <!-- User Setting -->
-                <div class="nav">
+                <div class="nav flex-column">
                     <a class="nav-link d-flex justify-content-between align-items-center
               {{ request()->routeIs('user.create', 'user.list') ? '' : 'collapsed' }}"
                         href="#!" data-bs-toggle="collapse" data-bs-target="#navusers"
@@ -86,13 +87,13 @@
                         <div class="nav flex-column ms-3">
                             <!-- Child links full-color active field -->
                             <a href="{{ route('user.create') }}"
-                                class="nav-link {{ request()->routeIs('user.create') ? 'active text-white fw-bold bg-primary' : 'text-dark' }}">
+                                class="nav-link {{ request()->routeIs('user.create') ? 'active text-white fw-bold bg-primary rounded-pill px-3 py-2' : 'text-dark' }}">
                                 <i data-feather="user-plus" class="me-2 icon-xxs"></i>
                                 Create Users
                             </a>
 
                             <a href="{{ route('user.list') }}"
-                                class="nav-link {{ request()->routeIs('user.list') ? 'active text-white fw-bold bg-primary' : 'text-dark' }}">
+                                class="nav-link {{ request()->routeIs('user.list') ? 'active text-white fw-bold bg-primary rounded-pill px-3 py-2' : 'text-dark' }}">
                                 <i data-feather="list" class="me-2 icon-xxs"></i>
                                 User List
                             </a>
@@ -103,69 +104,68 @@
 
 
 
-                <!-- System Settings Dropdown -->
-                <div class="nav">
-                    <a class="nav-link d-flex justify-content-between align-items-center  {{ request()->routeIs('profile.edit', 'system.setting', 'admin.setting', 'mail.setting') ? '' : 'collapsed' }}"
-                        data-bs-toggle="collapse" data-bs-target="#navecommerce"
-                        aria-expanded="{{ request()->routeIs('profile.edit', 'system.setting', 'directory.setting', 'admin.setting', 'mail.setting') ? 'true' : 'false' }}"
-                        aria-controls="navecommerce">
+                <!-- System Settings -->
+                <div class="nav flex-column">
+                    <a class="nav-link d-flex justify-content-between align-items-center
+        {{ request()->routeIs('profile.edit', 'system.setting', 'admin.setting', 'mail.setting', 'directory.setting') ? '' : 'collapsed' }}"
+                        href="#!" data-bs-toggle="collapse" data-bs-target="#navsystem"
+                        aria-expanded="{{ request()->routeIs('profile.edit', 'system.setting', 'admin.setting', 'mail.setting', 'directory.setting') ? 'true' : 'false' }}"
+                        aria-controls="navsystem">
 
                         <div class="text-dark">
                             <i data-feather="settings" class="me-2 icon-xxs"></i>
-                            System Setting
+                            System Settings
                         </div>
 
                         <!-- Arrow icon -->
                         <i data-feather="chevron-down" class="arrow-icon text-dark"></i>
-
                     </a>
 
-                    <div id="navecommerce"
+                    <!-- Collapse div must match data-bs-target -->
+                    <div id="navsystem"
                         class="collapse {{ request()->routeIs('profile.edit', 'system.setting', 'admin.setting', 'mail.setting', 'directory.setting') ? 'show' : '' }}">
                         <div class="nav flex-column ms-3">
                             <a href="{{ route('profile.edit') }}"
-                                class="nav-link {{ request()->routeIs('profile.edit') ? 'active text-white fw-bold bg-primary' : 'text-dark' }}">
+                                class="nav-link {{ request()->routeIs('profile.edit') ? 'active text-white fw-bold bg-primary rounded-pill px-3 py-2' : 'text-dark' }}">
                                 <i data-feather="user" class="me-2 icon-xxs"></i>
                                 Profile Setting
                             </a>
 
                             <a href="{{ route('system.setting') }}"
-                                class="nav-link {{ request()->routeIs('system.setting') ? 'active text-white fw-bold bg-primary' : 'text-dark' }}">
+                                class="nav-link {{ request()->routeIs('system.setting') ? 'active text-white fw-bold bg-primary rounded-pill px-3 py-2' : 'text-dark' }}">
                                 <i data-feather="tool" class="me-2 icon-xxs"></i>
                                 System Setting
                             </a>
 
                             <a href="{{ route('directory.setting') }}"
-                                class="nav-link {{ request()->routeIs('directory.setting') ? 'active text-white fw-bold bg-primary' : 'text-dark' }}">
+                                class="nav-link {{ request()->routeIs('directory.setting') ? 'active text-white fw-bold bg-primary rounded-pill px-3 py-2' : 'text-dark' }}">
                                 <i data-feather="tool" class="me-2 icon-xxs"></i>
                                 Active Directory Setting
                             </a>
 
                             <a href="{{ route('admin.setting') }}"
-                                class="nav-link {{ request()->routeIs('admin.setting') ? 'active text-white fw-bold bg-primary' : 'text-dark' }}">
+                                class="nav-link {{ request()->routeIs('admin.setting') ? 'active text-white fw-bold bg-primary rounded-pill px-3 py-2' : 'text-dark' }}">
                                 <i data-feather="shield" class="me-2 icon-xxs"></i>
                                 Admin Setting
                             </a>
 
                             <a href="{{ route('mail.setting') }}"
-                                class="nav-link {{ request()->routeIs('mail.setting') ? 'active text-white fw-bold bg-primary' : 'text-dark' }}">
+                                class="nav-link {{ request()->routeIs('mail.setting') ? 'active text-white fw-bold bg-primary rounded-pill px-3 py-2' : 'text-dark' }}">
                                 <i data-feather="mail" class="me-2 icon-xxs"></i>
                                 Mail Setting
                             </a>
                         </div>
                     </div>
-
                 </div>
 
-
-                {{-- <!-- Role Management -->
+                {{-- Role Management
                 <div class="nav">
                     <a href="{{ route('admin.role.list') }}"
-                        class="nav-link {{ request()->routeIs('admin.role.list') ? 'active text-white fw-bold bg-primary' : 'text-dark' }}">
+                    class="nav-link {{ request()->routeIs('admin.role.list') ? 'active text-white fw-bold bg-primary' : 'text-dark' }}">
                         <i data-feather="key" class="me-2 icon-xxs"></i>
                         Role Management
                     </a>
-                </div>  --}}
+                </div> --}}
 
 
 
