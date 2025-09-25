@@ -40,11 +40,17 @@
                 <div class="card">
                     <div class="card-header">
                         <h4 class="mb-1">Upload PDF</h4>
-                        
+
                     </div>
                     <div class="card-body">
                         <form action="{{ route('pdf.store') }}" method="POST" enctype="multipart/form-data">
                             @csrf
+
+                            <div class="mb-3">
+                            <label class="form-label">Date</label>
+                            <input type="date" name="custom_date" class="form-control" value="{{ old('custom_date') }}">
+                            </div>
+
                             <div class="mb-3">
                                 <label class="form-label">Title</label>
                                 <input type="text" name="title" class="form-control"

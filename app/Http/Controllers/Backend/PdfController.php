@@ -12,27 +12,26 @@ class PdfController extends Controller
 {
     public function index()
     {
-         $pdfs = Pdf::with('date')->latest()->get();
+        $pdfs = Pdf::with('date')->join('dates', 'pdfs.date_id', '=', 'dates.id')
+           ->orderBy('dates.date_value', 'desc')
+           ->select('pdfs.*')
+           ->get();
+
         //  return view('backend.layouts.pdf.index', $data);
         return view('backend.layouts.pdf.index', compact('pdfs'));
     }
 
-    // public function create()
-    // {
-    //     return view('backend.layouts.pdf.');
-    // }
 
     public function store(Request $request)
     {
         $request->validate([
+            'custom_date' => 'required|date',
             'title' => 'required|string|max:200',
             'short_desc' => 'required|string|max:255',
             'file' => 'required|file|mimes:pdf',
         ]);
 
-        // Get today's date or create it if not exists
-        $today = now()->toDateString();
-        $date = Date::firstOrCreate(['date_value' => $today]);
+        $date = Date::firstOrCreate(['date_value' => $request->custom_date]);
 
         // Handle file upload to public/File
         $path = null;
@@ -64,10 +63,15 @@ class PdfController extends Controller
         $pdf = Pdf::findOrFail($id);
 
         $request->validate([
+            'custom_date' => 'required|date',
             'title' => 'nullable|string|max:200',
             'short_desc' => 'nullable|string|max:255',
             'file' => 'nullable|file|mimes:pdf',
         ]);
+
+            // Update or create the date record
+            $date = Date::firstOrCreate(['date_value' => $request->custom_date]);
+            $pdf->date_id = $date->id;
 
         if ($request->filled('title')) $pdf->title = $request->title;
         if ($request->filled('short_desc')) $pdf->short_desc = $request->short_desc;

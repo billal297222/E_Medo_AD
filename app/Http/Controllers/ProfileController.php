@@ -39,12 +39,10 @@ class ProfileController extends Controller
 
         // Handle avatar upload
         if ($request->hasFile('avatar')) {
-            // Delete old avatar if exists and not default
             if ($user->avatar && file_exists(public_path('uploads/avatar/' . $user->avatar)) && $user->avatar != 'default.jpg') {
                 unlink(public_path('uploads/avatar/' . $user->avatar));
             }
 
-            // Save new avatar
             $file = $request->file('avatar');
             $filename = uniqid() . '-' . time() . '.' . $file->getClientOriginalExtension();
             $file->move(public_path('uploads/avatar'), $filename);
@@ -53,8 +51,7 @@ class ProfileController extends Controller
 
         $user->save();
 
-        // Flash success message
-        return Redirect::route('profile.edit')->with('status', 'Profile updated successfully.');
+        return redirect()->route('profile.edit')->with('status', 'Profile updated successfully.');
     }
 
     /**
@@ -65,20 +62,21 @@ class ProfileController extends Controller
         $request->validate([
             'current_password' => ['required'],
             'password' => ['required', 'string', 'min:6', 'confirmed'],
+        ], [
+            'password.confirmed' => 'New password and confirm password do not match.',
+            'password.min' => 'Password must be at least 6 characters.',
         ]);
 
         $user = $request->user();
 
-        // Check current password
         if (!Hash::check($request->current_password, $user->password)) {
-            return back()->withErrors(['current_password' => 'Current password does not match']);
+            return back()->withErrors(['current_password' => 'Current password is incorrect.']);
         }
 
-        // Update password
         $user->password = Hash::make($request->password);
         $user->save();
 
-       return Redirect::route('profile.edit')->with('password-status', 'Password updated successfully.');
+        return redirect()->route('profile.edit')->with('password-status', 'Password updated successfully.');
     }
 
     /**

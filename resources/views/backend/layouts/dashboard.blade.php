@@ -5,11 +5,10 @@
 @section('content')
 <div class="container-fluid py-4">
 
-    <!-- Greeting & Info Cards Row -->
+    <!-- Greeting & Info Cards Row (Row 1) -->
     <div class="row g-3">
-
         <!-- Welcome Card -->
-        <div class="col-md-4">
+        <div class="col-md-6">
             <div class="card h-100 shadow-sm text-center">
                 <div class="card-body d-flex flex-column justify-content-center align-items-center">
                     <h3 class="fw-bold">👋 Hey {{ Auth::user()->name ?? 'Guest' }}!</h3>
@@ -19,7 +18,7 @@
         </div>
 
         <!-- Date & Time Card -->
-        <div class="col-md-4">
+        <div class="col-md-6">
             <div class="card h-100 shadow-sm text-center">
                 <div class="card-body d-flex flex-column justify-content-center align-items-center position-relative">
                     <i class="mdi mdi-calendar icon position-absolute top-0 end-0 fs-1 text-muted" style="opacity: 0.15;"></i>
@@ -29,35 +28,13 @@
                 </div>
             </div>
         </div>
-
-        <!-- Motivational Card -->
-        <div class="col-md-4">
-            <div class="card h-100 shadow-sm text-center">
-                <div class="card-body d-flex flex-column justify-content-center align-items-center position-relative">
-                    <i class="mdi mdi-lightbulb-on-outline icon position-absolute top-0 end-0 fs-1 text-warning" style="opacity: 0.15;"></i>
-                    <h5 class="card-title">Tip of the Day</h5>
-                    <p class="mb-0">Manage your PDFs efficiently and boost your productivity every day! 💡</p>
-                </div>
-            </div>
-        </div>
     </div>
 
-    <!-- Summary Cards Row -->
+    <!-- Summary Cards Row (Row 2) -->
     <div class="row g-3 mt-3">
-        <!-- Total Users -->
-        <div class="col-md-6 ">
-            <div class="card h-100 shadow-sm text-center">
-                <div class="card-body position-relative">
-                    <i class="mdi mdi-account-multiple icon position-absolute top-0 end-0 fs-1 text-success" style="opacity: 0.15;"></i>
-                    <h5 class="card-title">Total Users</h5>
-                    <h2>{{ $totalUsers ?? 0 }}</h2>
-                    <p>All registered users except admin</p>
-                </div>
-            </div>
-        </div>
 
         <!-- Total PDFs -->
-        <div class="col-md-6 ">
+        <div class="col-md-6">
             <div class="card h-100 shadow-sm text-center">
                 <div class="card-body position-relative">
                     <i class="mdi mdi-file-pdf-box icon position-absolute top-0 end-0 fs-1 text-danger" style="opacity: 0.15;"></i>
@@ -67,8 +44,19 @@
                 </div>
             </div>
         </div>
+        
+        <!-- Motivational Card -->
+        <div class="col-md-6">
+            <div class="card h-100 shadow-sm text-center">
+                <div class="card-body d-flex flex-column justify-content-center align-items-center position-relative">
+                    <i class="mdi mdi-lightbulb-on-outline icon position-absolute top-0 end-0 fs-1 text-warning" style="opacity: 0.15;"></i>
+                    <h5 class="card-title">Tip of the Day</h5>
+                    <p class="mb-0">Manage your PDFs efficiently and boost your productivity every day! 💡</p>
+                </div>
+            </div>
+        </div>
 
-       
+
     </div>
 </div>
 

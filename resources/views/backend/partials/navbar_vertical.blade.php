@@ -64,9 +64,9 @@
 
 
                 <!-- User Setting -->
-                <div class="nav flex-column">
+                {{-- <div class="nav flex-column">
                     <a class="nav-link d-flex justify-content-between align-items-center
-              {{ request()->routeIs('user.create', 'user.list') ? '' : 'collapsed' }}"
+                       {{ request()->routeIs('user.create', 'user.list') ? '' : 'collapsed' }}"
                         href="#!" data-bs-toggle="collapse" data-bs-target="#navusers"
                         aria-expanded="{{ request()->routeIs('user.create', 'user.list') ? 'true' : 'false' }}"
                         aria-controls="navusers">
@@ -99,7 +99,7 @@
                             </a>
                         </div>
                     </div>
-                </div>
+                </div> --}}
 
 
 

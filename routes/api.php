@@ -37,11 +37,3 @@ Route::middleware('auth:api')->group(function () {
 
 
 
-
-
-// Route::post('/login', [AuthAPIController::class, 'login']);
-// Route::post('/logout', [AuthAPIController::class, 'logout']); ldap
-// Route::get('/session', [AuthAPIController::class, 'me']);
-
-
-

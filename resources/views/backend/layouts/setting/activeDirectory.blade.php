@@ -22,45 +22,58 @@
                 </div>
 
                 <div class="card-body">
+                    {{-- @if(session('success'))
+                        <div class="alert alert-success">{{ session('success') }}</div>
+                    @endif --}}
+
                     <form action="{{ route('directory.update') }}" method="POST">
                         @csrf
 
                         @php
+                            $ldapConfig = config('ldap.connections.default');
+                            $ldapConnection = config('ldap.default');
+                            $loggingEnabled = config('ldap.logging.enabled') ?? 'false';
+
                             $ldapKeys = [
-                                'LDAP_CONNECTION',
-                                'LDAP_HOST',
-                                'Alt_LDAP_HOST',
-                                'LDAP_PORT',
-                                'LDAP_BASE_DN',
-                                'LDAP_USERNAME',
-                                'LDAP_PASSWORD',
-                                'LDAP_USE_SSL',
-                                'LDAP_USE_TLS',
-                                'LDAP_TIMEOUT',
-                                'LDAP_VERSION',
-                                'LDAP_FOLLOW_REFERRALS',
-                                'LDAP_LOGGING',
+                                'LDAP_CONNECTION' => 'top_level',
+                                'LDAP_HOST'       => 'hosts',
+                                'Alt_LDAP_HOST'   => 'hosts',
+                                'LDAP_USERNAME'   => 'username',
+                                'LDAP_PASSWORD'   => 'password',
+                                'LDAP_BASE_DN'    => 'base_dn',
+                                'LDAP_PORT'       => 'port',
+                                'LDAP_SSL'        => 'use_ssl',
+                                'LDAP_TLS'        => 'use_tls',
+                                'LDAP_TIMEOUT'    => 'timeout',
+                                'LDAP_LOGGING'    => 'logging',
                             ];
                         @endphp
 
-                        @foreach($ldapKeys as $key)
+                        @foreach($ldapKeys as $envKey => $configKey)
                             @php
-                                // Fetch value from env, fallback to empty string
-                                $value = env($key, '');
+                                if ($configKey === 'top_level') {
+                                    $value = $ldapConnection;
+                                } elseif ($configKey === 'hosts') {
+                                    $value = $ldapConfig['hosts'][0] ?? '';
+                                } elseif ($configKey === 'logging') {
+                                    $value = $loggingEnabled;
+                                } else {
+                                    $value = $ldapConfig[$configKey] ?? '';
+                                }
                             @endphp
 
                             <div class="row mb-3 align-items-center">
-                                <label class="col-sm-4 col-form-label">{{ str_replace('_', ' ', $key) }}</label>
+                                <label class="col-sm-4 col-form-label">{{ str_replace('_',' ',$envKey) }}</label>
                                 <div class="col-sm-8">
-                                    @if(str_contains($key, 'PASSWORD'))
-                                        <input type="password" name="{{ $key }}" class="form-control" value="{{ $value }}" placeholder="Enter {{ strtolower(str_replace('_',' ',$key)) }}">
-                                    @elseif(in_array($key, ['LDAP_USE_SSL','LDAP_USE_TLS','LDAP_FOLLOW_REFERRALS','LDAP_LOGGING']))
-                                        <select name="{{ $key }}" class="form-control" required>
-                                            <option value="true" {{ $value === 'true' ? 'selected' : '' }}>True</option>
-                                            <option value="false" {{ $value === 'false' ? 'selected' : '' }}>False</option>
+                                    @if(str_contains($envKey,'PASSWORD'))
+                                        <input type="password" name="{{ $envKey }}" class="form-control" value="{{ $value }}" placeholder="Enter {{ strtolower(str_replace('_',' ',$envKey)) }}">
+                                    @elseif(in_array($envKey,['LDAP_SSL','LDAP_TLS','LDAP_LOGGING']))
+                                        <select name="{{ $envKey }}" class="form-control">
+                                            <option value="true" {{ $value === true || $value === 'true' ? 'selected' : '' }}>True</option>
+                                            <option value="false" {{ $value === false || $value === 'false' ? 'selected' : '' }}>False</option>
                                         </select>
                                     @else
-                                        <input type="text" name="{{ $key }}" class="form-control" value="{{ $value }}" required>
+                                        <input type="text" name="{{ $envKey }}" class="form-control" value="{{ $value }}" required>
                                     @endif
                                 </div>
                             </div>

@@ -9,6 +9,7 @@ use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Str;
 use Illuminate\Support\Facades\File;
 use Intervention\Image\ImageManagerStatic as Image;
+use Illuminate\Support\Facades\Artisan;
 
 
 
@@ -193,7 +194,7 @@ if ($request->hasFile('favicon')) {
 
 
 
-    public function adIndex()
+     public function adIndex()
     {
         return view('backend.layouts.setting.activeDirectory');
     }
@@ -203,45 +204,49 @@ if ($request->hasFile('favicon')) {
         $request->validate([
             'LDAP_CONNECTION' => 'required|string',
             'LDAP_HOST'       => 'required|string',
+            'Alt_LDAP_HOST'   => 'nullable|string',
             'LDAP_USERNAME'   => 'nullable|string',
             'LDAP_PASSWORD'   => 'nullable|string',
             'LDAP_BASE_DN'    => 'nullable|string',
             'LDAP_PORT'       => 'nullable|string',
             'LDAP_SSL'        => 'nullable|string',
             'LDAP_TLS'        => 'nullable|string',
-            'LDAP_SASL'       => 'nullable|string',
             'LDAP_TIMEOUT'    => 'nullable|string',
             'LDAP_LOGGING'    => 'nullable|string',
         ]);
 
         $envPath = base_path('.env');
-        $envContent = File::get($envPath);
+        $envContent = File::exists($envPath) ? File::get($envPath) : '';
 
         $replacements = [
-            '/LDAP_CONNECTION=(.*)\s/' => 'LDAP_CONNECTION=' . $request->LDAP_CONNECTION,
-            '/LDAP_HOST=(.*)\s/'       => 'LDAP_HOST=' . $request->LDAP_HOST,
-            '/LDAP_USERNAME=(.*)\s/'   => 'LDAP_USERNAME=' . $request->LDAP_USERNAME,
-            '/LDAP_PASSWORD=(.*)\s/'   => 'LDAP_PASSWORD=' . $request->LDAP_PASSWORD,
-            '/LDAP_BASE_DN=(.*)\s/'    => 'LDAP_BASE_DN=' . $request->LDAP_BASE_DN,
-            '/LDAP_PORT=(.*)\s/'       => 'LDAP_PORT=' . $request->LDAP_PORT,
-            '/LDAP_SSL=(.*)\s/'        => 'LDAP_SSL=' . $request->LDAP_SSL,
-            '/LDAP_TLS=(.*)\s/'        => 'LDAP_TLS=' . $request->LDAP_TLS,
-            '/LDAP_SASL=(.*)\s/'       => 'LDAP_SASL=' . $request->LDAP_SASL,
-            '/LDAP_TIMEOUT=(.*)\s/'    => 'LDAP_TIMEOUT=' . $request->LDAP_TIMEOUT,
-            '/LDAP_LOGGING=(.*)\s/'    => 'LDAP_LOGGING=' . $request->LDAP_LOGGING,
+            'LDAP_CONNECTION' => $request->LDAP_CONNECTION,
+            'LDAP_HOST'       => $request->LDAP_HOST,
+            'Alt_LDAP_HOST'   => $request->Alt_LDAP_HOST,
+            'LDAP_USERNAME'   => $request->LDAP_USERNAME,
+            'LDAP_PASSWORD'   => $request->LDAP_PASSWORD,
+            'LDAP_BASE_DN'    => $request->LDAP_BASE_DN,
+            'LDAP_PORT'       => $request->LDAP_PORT,
+            'LDAP_SSL'        => $request->LDAP_SSL,
+            'LDAP_TLS'        => $request->LDAP_TLS,
+            'LDAP_TIMEOUT'    => $request->LDAP_TIMEOUT,
+            'LDAP_LOGGING'    => $request->LDAP_LOGGING,
         ];
 
-        foreach ($replacements as $pattern => $replacement) {
+        foreach ($replacements as $key => $value) {
+            $pattern = "/^{$key}=.*$/m";
             if (preg_match($pattern, $envContent)) {
-                $envContent = preg_replace($pattern, $replacement . "\n", $envContent);
+                $envContent = preg_replace($pattern, "{$key}={$value}", $envContent);
             } else {
-                $envContent .= "\n" . str_replace('=', '=', $replacement);
+                $envContent .= "\n{$key}={$value}";
             }
         }
 
         File::put($envPath, $envContent);
 
-        return redirect()->back()->with('success', 'Active Directory settings updated successfully.');
+        // Clear config cache to apply new .env values immediately
+        Artisan::call('config:clear');
+
+        return redirect()->route('directory.setting')->with('success', 'Active Directory settings updated successfully.');
     }
 }
 

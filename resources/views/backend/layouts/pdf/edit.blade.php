@@ -13,6 +13,15 @@
                     <div class="card card-body mb-3 shadow-sm">
                         <h4 class="mb-4">PDF <span>Info</span></h4>
 
+                        <!-- Date Field -->
+                        <div class="row mb-3">
+                            <label class="col-3 col-form-label">Date</label>
+                            <div class="col-9">
+                                <input type="date" name="custom_date" class="form-control"
+                                    value="{{ old('custom_date', $pdf->date->date_value ?? '') }}">
+                            </div>
+                        </div>
+
                         {{-- Title --}}
                         <div class="row mb-3">
                             <label class="col-3 col-form-label">Title</label>
