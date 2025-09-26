@@ -9,6 +9,8 @@ use App\Http\Controllers\API\AdminAPIPdfController;
 
 
 Route::post('/user/login', [AuthAPIController::class, 'login']);
+Route::get('/validate', [AuthAPIController::class, 'validateToken']);
+Route::get('/sso-login', [AuthAPIController::class, 'ssoLogin']);
 
 Route::middleware('auth:api')->group(function () {
 
