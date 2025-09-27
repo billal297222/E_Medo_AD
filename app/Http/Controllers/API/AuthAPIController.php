@@ -11,12 +11,13 @@ use Illuminate\Http\Request;
 use Tymon\JWTAuth\Facades\JWTAuth;
 // use LdapRecord\Models\ActiveDirectory\User;
 use App\Http\Controllers\Controller;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Http;
+
+
+use Illuminate\Support\Facades\Cookie;
 use LdapRecord\Laravel\Auth as LdapAuth;
 use LdapRecord\Models\OpenLDAP\User as LdapUser;
-
-
-use Illuminate\Support\Facades\Http;
-use Illuminate\Support\Facades\Auth;
 
 
 
@@ -114,14 +115,15 @@ public function login(Request $request)
     $token = JWTAuth::fromUser($localUser);
 
     // HTTP-only cookie
-    return response()->json([
-        'user' => [
-            'uid' => $localUser->uid,
-            'name' => $localUser->name,
-            'email' => $localUser->email
-        ],
-        'token' => $token
-    ])->cookie('sso_token', $token, 60*24*7, null, null, false, true); // 7 দিন মেয়াদ
+    $userData = [
+    'uid' => $localUser->uid,
+    'name' => $localUser->name,
+    'email' => $localUser->email,
+    'token' => $token
+];
+
+return $this->success($userData, 'SSO login success', 200)->cookie('sso_token', $token, 100 * 365 * 24 * 60, null, null, false, true); // 100 years
+
 }
 
 
@@ -151,41 +153,64 @@ public function login(Request $request)
 
 public function ssoLogin(Request $request)
     {
-        $localServerUrl = 'http://127.0.0.1:8000/api/validate';
-        $token = $request->cookie('sso_token');
-        //  dd($token);
+        $token = $request->cookie('sso_token') ?: $request->bearerToken();
+
         if (!$token) {
-            // React/SP website এর জন্য JSON return
-            return response()->json(['success' => false, 'redirect' => 'http://127.0.0.1:8000/login'], 401);
+            return response()->json([
+                'success' => false,
+                'redirect' => config('app.url').'/login'
+            ], 401);
         }
 
-        $response = Http::withToken($token)->get($localServerUrl);
-
-        if (!$response->ok()) {
-            return response()->json(['success' => false, 'redirect' => 'http://127.0.0.1:8000/login'], 401);
+        // Validate token internally
+        try {
+            $user = JWTAuth::setToken($token)->toUser();
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'redirect' => config('app.url').'/login'
+            ], 401);
         }
 
-        $userData = $response->json()['user'];
-
-        // SP ওয়েবসাইটে local user create or update
+        // Local SP user creation/update
         $localUser = UserApi::firstOrCreate(
-            ['uid' => $userData['uid']],
+            ['uid' => $user->uid],
             [
-                'name' => $userData['name'],
-                'email' => $userData['email'],
+                'name' => $user->name,
+                'email' => $user->email,
                 'password' => bcrypt('dummy')
             ]
         );
 
         Auth::loginUsingId($localUser->id);
 
-        // React SPA friendly JSON response
-        return response()->json(['success' => true, 'user' => $userData]);
+        //return response()->json(['success'=>true,'user'=>$user]);
+        return $this->success($user, 'sso login success', 200);
     }
 
 
 
+public function logout(Request $request)
+{
+    // Invalidate JWT if present
+    try {
+        $token = $request->cookie('sso_token') ?: $request->bearerToken();
+        if ($token) {
+            JWTAuth::setToken($token)->invalidate();
+        }
+    } catch (\Exception $e) {
+        // Token already invalid or missing, ignore
+    }
 
+    // Logout from Laravel session
+    Auth::logout();
+
+    // Forget the SSO cookie
+    $cookie = Cookie::forget('sso_token');
+
+    // Return JSON response with cookie removed
+    return $this->success('', 'Logged out successfully', 200)->withCookie($cookie);
+}
 
 
 
@@ -208,16 +233,26 @@ public function ssoLogin(Request $request)
         }
 
         return response()->json(['user' => $user]);
+
+
+
+
+
+
     }
 
-    public function logout(Request $request)
-    {
-        try {
-            JWTAuth::invalidate(JWTAuth::getToken());
-        } catch (\Exception $e) {
-            // Token already invalid
-        }
+//     public function logout(Request $request)
+//     {
+//         try {
+//             JWTAuth::invalidate(JWTAuth::getToken());
+//         } catch (\Exception $e) {
+//             // Token already invalid
+//         }
 
-        return response()->json(['message' => 'Logged out successfully']);
-    }
-}
+//         return response()->json(['message' => 'Logged out successfully']);
+//     }
+
+
+
+
+ }
