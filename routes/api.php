@@ -8,9 +8,34 @@ use App\Http\Controllers\API\AdminAPIPdfController;
 
 
 
-Route::post('/user/login', [AuthAPIController::class, 'login']);
-Route::get('/validate', [AuthAPIController::class, 'validateToken']);
+// Route::post('/user/login', [AuthAPIController::class, 'login']);
+// Route::get('/validate', [AuthAPIController::class, 'validateToken']);
+// Route::get('/sso-login', [AuthAPIController::class, 'ssoLogin']);
+
+
+
+// Traditional login
+// Route::post('/user/login', [AuthAPIController::class, 'login']);
+
+// // Validate JWT token
+// Route::get('/validate', [AuthAPIController::class, 'validateToken']);
+
+// // SSO login endpoint
+// Route::get('/sso-login', [AuthAPIController::class, 'ssoLogin']);
+
+
+// Redirect user to ADFS login
 Route::get('/sso-login', [AuthAPIController::class, 'ssoLogin']);
+
+// ACS endpoint (handle ADFS response)
+Route::post('/saml2/acs', [AuthAPIController::class, 'samlAcs']);
+
+// SLS endpoint (handle logout)
+Route::get('/saml2/sls', [AuthAPIController::class, 'samlSls']);
+
+
+
+
 
 Route::middleware('auth:api')->group(function () {
 

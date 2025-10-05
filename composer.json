@@ -6,9 +6,11 @@
     "license": "MIT",
     "require": {
         "php": "^8.1",
+        "aacotroneo/laravel-saml2": "^2.1",
         "adldap2/adldap2-laravel": "^6.1",
         "barryvdh/laravel-dompdf": "^3.1",
         "directorytree/ldaprecord-laravel": "^3.4",
+        "firebase/php-jwt": "^6.11",
         "guzzlehttp/guzzle": "^7.2",
         "intervention/image": "^3.11",
         "laracasts/flash": "^3.2",
